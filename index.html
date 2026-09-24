@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Birthday My Love 💖</title>
+  
+  <!-- Fonts & Frameworks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Prompt:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mitr: ['Mitr', 'sans-serif'],
+            prompt: ['Prompt', 'sans-serif'],
+          },
+          colors: {
+            warmBg: '#FAF6F0',
+            cardBg: '#FFFDF9',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @keyframes springUp {
+      0% { transform: translate(-50%, 20px) scale(0.7); opacity: 0; }
+      60% { transform: translate(-50%, -6px) scale(1.03); opacity: 1; }
+      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+    }
+
+    @keyframes floatGentle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .animate-spring {
+      animation: springUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-float {
+      animation: floatGentle 3.5s ease-in-out infinite;
+    }
+
+    /* Candle Body Styling */
+    @keyframes candleGrow {
+      0% { transform: translate(-50%, -50%) scaleY(0); opacity: 0; }
+      100% { transform: translate(-50%, -100%) scaleY(1); opacity: 1; }
+    }
+
+    .candle {
+      position: absolute;
+      width: 7px;
+      height: 52px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FDE8E8 40%, #F4A2A2 100%);
+      border-radius: 4px;
+      z-index: 10;
+      transform: translate(-50%, -100%);
+      box-shadow: inset -1.5px 0 2px rgba(0,0,0,0.08), 0 8px 12px rgba(180, 120, 120, 0.15);
+      animation: candleGrow 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Wick */
+    .candle::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1.5px;
+      height: 5px;
+      background: #4A4A4A;
+      border-radius: 1px;
+    }
+
+    /* FLAME STYLING (Soft, Smooth & Realistic) */
+    .flame-touch-area {
+      position: absolute;
+      top: -42px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    @keyframes smoothFlicker {
+      0%, 100% {
+        transform: scale(1) rotate(-0.5deg);
+        filter: drop-shadow(0 0 6px rgba(255, 175, 75, 0.6));
+      }
+      25% {
+        transform: scale(1.02, 0.98) rotate(1deg);
+        filter: drop-shadow(0 0 8px rgba(255, 185, 90, 0.75));
+      }
+      50% {
+        transform: scale(0.98, 1.03) rotate(-1deg);
+        filter: drop-shadow(0 0 5px rgba(255, 165, 60, 0.55));
+      }
+      75% {
+        transform: scale(1.01, 0.99) rotate(0.5deg);
+        filter: drop-shadow(0 0 7px rgba(255, 180, 80, 0.7));
+      }
+    }
+
+    .flame-wrapper {
+      position: relative;
+      width: 22px;
+      height: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      animation: smoothFlicker 2.2s ease-in-out infinite;
+      transform-origin: center bottom;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    /* Main Smooth Outer Flame Layer */
+    .flame-body {
+      position: relative;
+      width: 16px;
+      height: 28px;
+      border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
+      background: radial-gradient(circle at 50% 75%, 
+        #FFFFFF 0%, 
+        #FFE082 25%, 
+        #FFB300 55%, 
+        #FF6D00 85%, 
+        rgba(230, 81, 0, 0) 100%
+      );
+      filter: blur(0.4px);
+      box-shadow: 0 0 12px rgba(255, 160, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    /* Soft Core Glow Inside */
+    .flame-body::before {
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      width: 7px;
+      height: 13px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      filter: blur(0.6px);
+      opacity: 0.95;
+    }
+
+    /* Soft Blue Base Glow */
+    .flame-body::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      width: 7px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(68, 138, 255, 0.85);
+      filter: blur(0.8px);
+    }
+
+    /* Ambient Warm Atmosphere Glow */
+    .flame-aura {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 180, 70, 0.45) 0%, rgba(255, 140, 0, 0) 70%);
+      bottom: -2px;
+      pointer-events: none;
+      filter: blur(2px);
+    }
+
+    /* When Extinguishing - Instantly hide all flame glow */
+    .flame-wrapper.off {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transform: scale(0.1) translateY(-10px) !important;
+      pointer-events: none !important;
+    }
+
+    /* Realistic Drift Smoke */
+    @keyframes smokeDrift {
+      0% { opacity: 0.65; transform: translate(-50%, 0) scale(0.5); }
+      100% { opacity: 0; transform: translate(calc(-50% + (var(--drift) * 1px)), -45px) scale(2.8); }
+    }
+
+    .smoke {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      background: rgba(130, 130, 130, 0.55);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(1px);
+      animation: smokeDrift 1.6s ease-out forwards;
+    }
+
+    /* Envelope Card */
+    .envelope-card {
+      background: linear-gradient(135deg, #FFFDF9 0%, #FEEFEE 100%);
+      border: 1px solid rgba(244, 114, 182, 0.25);
+      box-shadow: 0 16px 32px -8px rgba(225, 110, 140, 0.2), 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+  </style>
+</head>
+<body class="bg-warmBg font-mitr text-stone-700 min-h-screen flex flex-col items-center justify-center overflow-hidden antialiased selection:bg-rose-100">
+
+  <!-- Background Blurs -->
+  <div class="fixed top-12 left-8 w-72 h-72 bg-rose-200/30 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed bottom-12 right-8 w-80 h-80 bg-amber-100/40 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-md h-screen max-h-[850px] flex flex-col items-center justify-end p-6 pb-12 relative z-10">
+
+    <!-- Envelope Card Button -->
+    <button id="envelopeBtn" onclick="openLetter()" 
+            class="hidden absolute top-[26%] left-1/2 -translate-x-1/2 z-30 group cursor-pointer focus:outline-none">
+      <div class="animate-float envelope-card p-3.5 px-5 rounded-2xl flex items-center gap-3.5 transition-all duration-300 group-hover:scale-105 group-active:scale-95">
+        
+        <!-- Wax Seal Icon -->
+        <div class="w-10 h-10 rounded-full bg-rose-100/80 border border-rose-200 flex items-center justify-center text-rose-500 shadow-inner group-hover:bg-rose-500 group-hover:text-white transition-colors duration-300">
+          <i data-lucide="mail-open" class="w-5 h-5"></i>
+        </div>
+
+        <div class="text-left pr-1">
+          <span class="text-[10px] font-prompt text-rose-400 font-semibold tracking-wider uppercase block">Birthday Letter</span>
+          <span class="text-xs font-semibold text-stone-700 block">เปิดอ่านจดหมายอวยพร 💌</span>
+        </div>
+
+        <!-- Ribbon Tag -->
+        <div class="w-2 h-2 rounded-full bg-rose-400/80 animate-ping"></div>
+      </div>
+    </button>
+
+    <!-- Cake Display Container -->
+    <div id="cakeWrapper" onclick="addCandle(event)" 
+         class="relative w-80 h-80 flex items-center justify-center mt-auto mb-6 cursor-pointer group">
+      <img id="cakeImg" src="cake.png" alt="Birthday Cake" 
+           class="w-full h-full object-contain pointer-events-none drop-shadow-2xl transition-transform duration-300 group-hover:scale-[1.01]">
+    </div>
+
+    <!-- Status Banner Text -->
+    <div class="w-full text-center">
+      <div id="statusText" class="inline-block px-5 py-2 rounded-2xl bg-white/70 backdrop-blur-md border border-stone-200/50 text-stone-600 font-medium text-sm shadow-sm transition-all duration-300">
+        แตะที่เค้กเพื่อปักเทียน 🎂
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Letter Modal -->
+  <div id="modalOverlay" onclick="closeLetter()" 
+       class="fixed inset-0 z-50 bg-stone-900/30 backdrop-blur-sm flex items-center justify-center p-5 opacity-0 pointer-events-none transition-opacity duration-500">
+    
+    <div onclick="event.stopPropagation()" 
+         class="w-full max-w-sm bg-cardBg rounded-3xl border border-white/80 p-7 shadow-2xl shadow-stone-900/15 max-h-[85vh] overflow-y-auto transform translate-y-8 scale-95 transition-all duration-500 ease-out modal-card">
+      
+      <div class="flex justify-between items-start mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-rose-50 flex items-center justify-center text-rose-400">
+            <i data-lucide="heart" class="w-3.5 h-3.5 fill-current"></i>
+          </div>
+          <span class="text-[11px] font-prompt text-stone-400 uppercase tracking-wider">To: คนเก่งที่สุดของน้อง</span>
+        </div>
+        <button onclick="closeLetter()" class="text-stone-400 hover:text-stone-600 p-1 rounded-full hover:bg-stone-100 transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <h2 class="text-lg font-bold text-stone-800 mb-3">สุขสันต์วันเกิดนะแฟน 💖</h2>
+      
+      <p class="text-sm font-prompt text-stone-600 leading-relaxed text-center whitespace-pre-line mb-6 bg-rose-50/40 p-4 rounded-2xl border border-rose-100/50">
+        โตขึ้นอีกปีแล้วนะ 🌸🎂
+        น้องขอให้แฟนมีความสุขมากๆ
+        มีความสุขในการใช้ชีวิตไปทุกๆวัน
+        มีแต่รอยยิ้ม มีแต่เรื่องราวและความทรงจำดีๆ
+        ขอบคุณนะที่เติบโตมาเป็นอย่างดี
+        และขอบคุณที่เกิดมาให้น้องคนนี้ได้รักนะ
+        จะรักแฟนแบบนี้ไปนานๆนะคะ 💖✨
+      </p>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <div class="bg-white p-2 rounded-xl shadow-sm border border-stone-100 transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+          <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=300&auto=format&fit=crop" class="w-full h-24 object-cover rounded-lg bg-stone-100" alt="Memory 1">
+        </div>
+        <div class="bg-white p-2 rounded-xl shadow-sm border border-stone-100 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop" class="w-full h-24 object-cover rounded-lg bg-stone-100" alt="Memory 2">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    document.getElementById('cakeImg').onerror = function() {
+      this.src = 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&auto=format&fit=crop';
+    };
+
+    let totalCandles = 0;
+    let blownCandles = 0;
+    let audioContext, analyser, microphone;
+    let isMicOn = false;
+    let isMicInitializing = false;
+
+    function addCandle(event) {
+      if (blownCandles > 0) return;
+
+      const wrapper = document.getElementById('cakeWrapper');
+      const rect = wrapper.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const candle = document.createElement('div');
+      candle.className = 'candle';
+      candle.style.left = `${x}px`;
+      candle.style.top = `${y}px`;
+
+      const touchArea = document.createElement('div');
+      touchArea.className = 'flame-touch-area';
+
+      const flameWrapper = document.createElement('div');
+      flameWrapper.className = 'flame-wrapper';
+
+      const aura = document.createElement('div');
+      aura.className = 'flame-aura';
+
+      const flameBody = document.createElement('div');
+      flameBody.className = 'flame-body';
+
+      flameWrapper.appendChild(aura);
+      flameWrapper.appendChild(flameBody);
+      touchArea.appendChild(flameWrapper);
+      candle.appendChild(touchArea);
+
+      touchArea.onclick = (e) => {
+        e.stopPropagation();
+        extinguish(flameWrapper);
+      };
+
+      wrapper.appendChild(candle);
+      totalCandles++;
+      updateStatus();
+
+      if (!isMicOn && !isMicInitializing) {
+        initMic();
+      }
+    }
+
+    function updateStatus() {
+      const banner = document.getElementById('statusText');
+      if (totalCandles === 1) {
+        banner.innerText = "ปักอีกนะแฟน ✨";
+      } else if (totalCandles > 1 && blownCandles === 0) {
+        banner.innerText = "พร้อมแล้วเป่าเลย! 🌬️";
+      }
+    }
+
+    function extinguish(flameWrapper) {
+      if (flameWrapper.classList.contains('off')) return;
+      
+      flameWrapper.classList.add('off');
+      blownCandles++;
+
+      const candleElement = flameWrapper.parentElement.parentElement;
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const smoke = document.createElement('div');
+          smoke.className = 'smoke';
+          smoke.style.setProperty('--drift', (Math.random() * 24 - 12).toString());
+          candleElement.appendChild(smoke);
+          setTimeout(() => smoke.remove(), 1600);
+        }, i * 100);
+      }
+
+      const banner = document.getElementById('statusText');
+
+      if (blownCandles < totalCandles) {
+        banner.innerText = "อ๊ะ! เป่าไม่หมด เป่าอีกก 💨";
+      } else if (blownCandles === totalCandles && totalCandles > 0) {
+        banner.innerText = "อยากอ่านมั้ย กดเปิดการ์ดด้านบนสิ! 💌";
+        const envBtn = document.getElementById('envelopeBtn');
+        envBtn.classList.remove('hidden');
+        envBtn.classList.add('animate-spring');
+      }
+    }
+
+    async function initMic() {
+      isMicInitializing = true;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        isMicOn = true;
+        detectBlow();
+      } catch (err) {
+        console.warn("ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน:", err);
+      } finally {
+        isMicInitializing = false;
+      }
+    }
+
+    function detectBlow() {
+      if (!isMicOn) return;
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(data);
+
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) sum += data[i];
+      let avg = sum / data.length;
+
+      if (avg > 35 && totalCandles > 0 && blownCandles < totalCandles) {
+        const activeWrappers = document.querySelectorAll('.flame-wrapper:not(.off)');
+        if (activeWrappers.length > 0) {
+          extinguish(activeWrappers[Math.floor(Math.random() * activeWrappers.length)]);
+        }
+      }
+      requestAnimationFrame(detectBlow);
+    }
+
+    function openLetter() {
+      const modal = document.getElementById('modalOverlay');
+      const card = modal.querySelector('.modal-card');
+
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100', 'pointer-events-auto');
+
+      card.classList.remove('translate-y-8', 'scale-95');
+      card.classList.add('translate-y-0', 'scale-100');
+
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#f472b6', '#fb7185', '#ffffff', '#fef08a']
+      });
+    }
+
+    function closeLetter() {
+      const modal = document.getElementById('modalOverlay');
+      const card = modal.querySelector('.modal-card');
+
+      modal.classList.remove('opacity-100', 'pointer-events-auto');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+
+      card.classList.remove('translate-y-0', 'scale-100');
+      card.classList.add('translate-y-8', 'scale-95');
+    }
+  </script>
+</body>
+</html>
