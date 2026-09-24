@@ -138,7 +138,7 @@
       transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
-    /* Main Smooth Outer Flame Layer (ย่อขนาดเล็กลง) */
+    /* Main Smooth Outer Flame Layer */
     .flame-body {
       position: relative;
       width: 10px;
@@ -195,7 +195,7 @@
       filter: blur(1.5px);
     }
 
-    /* When Extinguishing - Instantly hide all flame glow */
+    /* When Extinguishing */
     .flame-wrapper.off {
       opacity: 0 !important;
       visibility: hidden !important;
@@ -230,26 +230,26 @@
     }
   </style>
 </head>
-<body class="bg-warmBg font-mitr text-stone-700 min-h-screen flex flex-col items-center justify-center overflow-hidden antialiased selection:bg-rose-100">
+<body class="bg-warmBg font-mitr text-stone-700 min-h-screen flex flex-col items-center justify-between overflow-hidden antialiased selection:bg-rose-100">
 
   <!-- Background Blurs -->
   <div class="fixed top-12 left-8 w-72 h-72 bg-rose-200/30 rounded-full blur-3xl pointer-events-none"></div>
   <div class="fixed bottom-12 right-8 w-80 h-80 bg-amber-100/40 rounded-full blur-3xl pointer-events-none"></div>
 
   <!-- Main Container -->
-  <main class="w-full max-w-md h-screen max-h-[850px] flex flex-col items-center justify-between p-6 py-10 relative z-10">
+  <main class="w-full max-w-md h-screen max-h-[850px] flex flex-col items-center justify-between p-6 pt-12 pb-8 relative z-10">
 
-    <!-- Header Title Section (หัวข้อด้านบนเค้ก) -->
-    <div class="w-full text-center mt-4 z-20">
+    <!-- Header Title Section (หัวข้อด้านบน) -->
+    <div class="w-full text-center z-20">
       <span class="text-xs font-prompt text-rose-400 font-medium tracking-widest uppercase block mb-1">Special Day For You</span>
       <h1 class="text-2xl font-bold text-stone-800 tracking-wide flex items-center justify-center gap-2">
         Happy Birthday 💖
       </h1>
     </div>
 
-    <!-- Envelope Card Button -->
+    <!-- Envelope Card Button (อยู่เหนือเค้กเล็กน้อย) -->
     <button id="envelopeBtn" onclick="openLetter()" 
-            class="hidden absolute top-[28%] left-1/2 -translate-x-1/2 z-30 group cursor-pointer focus:outline-none">
+            class="hidden absolute top-[38%] left-1/2 -translate-x-1/2 z-30 group cursor-pointer focus:outline-none">
       <div class="animate-float envelope-card p-3.5 px-5 rounded-2xl flex items-center gap-3.5 transition-all duration-300 group-hover:scale-105 group-active:scale-95">
         
         <!-- Wax Seal Icon -->
@@ -267,15 +267,15 @@
       </div>
     </button>
 
-    <!-- Cake Display Container -->
+    <!-- Cake Display Container (ขยับเค้กลงด้านล่าง) -->
     <div id="cakeWrapper" onclick="addCandle(event)" 
-         class="relative w-80 h-80 flex items-center justify-center my-auto cursor-pointer group">
+         class="relative w-80 h-80 flex items-center justify-center mt-auto mb-4 cursor-pointer group">
       <img id="cakeImg" src="cake.png" alt="Birthday Cake" 
            class="w-full h-full object-contain pointer-events-none drop-shadow-2xl transition-transform duration-300 group-hover:scale-[1.01]">
     </div>
 
     <!-- Status Banner Text -->
-    <div class="w-full text-center mb-2">
+    <div class="w-full text-center">
       <div id="statusText" class="inline-block px-5 py-2 rounded-2xl bg-white/70 backdrop-blur-md border border-stone-200/50 text-stone-600 font-medium text-sm shadow-sm transition-all duration-300">
         แตะที่เค้กเพื่อปักเทียน 🎂
       </div>
@@ -338,6 +338,7 @@
     let audioContext, analyser, microphone;
     let isMicOn = false;
     let isMicInitializing = false;
+    let micReadyTime = 0; // หน่วงเวลาให้ไมค์นิ่งก่อนตรวจจับ
 
     function addCandle(event) {
       if (blownCandles > 0) return;
@@ -431,6 +432,7 @@
         microphone.connect(analyser);
         analyser.fftSize = 256;
         isMicOn = true;
+        micReadyTime = Date.now() + 800; // ป้องกันการตรวจจับภายใน 800ms แรกหลังจากเปิดไมค์
         detectBlow();
       } catch (err) {
         console.warn("ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน:", err);
@@ -441,19 +443,25 @@
 
     function detectBlow() {
       if (!isMicOn) return;
-      const data = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(data);
 
-      let sum = 0;
-      for (let i = 0; i < data.length; i++) sum += data[i];
-      let avg = sum / data.length;
+      // รอให้ผ่านช่วงหน่วงเวลาเสียงคลิก/เปิดไมค์ก่อน
+      if (Date.now() > micReadyTime) {
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(data);
 
-      if (avg > 35 && totalCandles > 0 && blownCandles < totalCandles) {
-        const activeWrappers = document.querySelectorAll('.flame-wrapper:not(.off)');
-        if (activeWrappers.length > 0) {
-          extinguish(activeWrappers[Math.floor(Math.random() * activeWrappers.length)]);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) sum += data[i];
+        let avg = sum / data.length;
+
+        // ปรับค่า Threshold เป็น 65 กันเสียงพูดขัดจังหวะ (ต้องเป่าลมใส่ไมค์)
+        if (avg > 65 && totalCandles > 0 && blownCandles < totalCandles) {
+          const activeWrappers = document.querySelectorAll('.flame-wrapper:not(.off)');
+          if (activeWrappers.length > 0) {
+            extinguish(activeWrappers[Math.floor(Math.random() * activeWrappers.length)]);
+          }
         }
       }
+
       requestAnimationFrame(detectBlow);
     }
 
